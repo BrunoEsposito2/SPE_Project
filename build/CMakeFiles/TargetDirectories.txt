@@ -1,0 +1,3 @@
+C:/Users/bruno/Desktop/OpenCV_Prova/build/CMakeFiles/OpenCV_Prova.dir
+C:/Users/bruno/Desktop/OpenCV_Prova/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/bruno/Desktop/OpenCV_Prova/build/CMakeFiles/ZERO_CHECK.dir

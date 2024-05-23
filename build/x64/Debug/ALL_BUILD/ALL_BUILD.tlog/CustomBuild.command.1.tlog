@@ -1,0 +1,10 @@
+^C:\USERS\BRUNO\DESKTOP\OPENCV_PROVA\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/bruno/Desktop/OpenCV_Prova -BC:/Users/bruno/Desktop/OpenCV_Prova/build --check-stamp-file C:/Users/bruno/Desktop/OpenCV_Prova/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

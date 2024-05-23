@@ -35,5 +35,7 @@ COPY ./ /workspace/OpenCV_Prova
 # Rimuove la directory build
 RUN rm -rf /workspace/OpenCV_Prova/build
 
+VOLUME [ "" ]
+
 # Imposta la directory di lavoro
 WORKDIR /workspace/OpenCV_Prova
