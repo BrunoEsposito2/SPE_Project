@@ -4,38 +4,21 @@ FROM ubuntu:latest
 # Aggiorna i repository e installa le dipendenze necessarie
 RUN apt-get update && apt-get install -y \
     g++ \
-    cmake \
-    libopencv-dev \
-    pkg-config \
-    wget \
-    unzip \
-    git \
-    && rm -rf /var/lib/apt/lists/*
+    openjdk-11-jdk
 
-# Installa le dipendenze necessarie per Visual Studio Code
-RUN apt-get update && apt-get install -y \
-    libxkbfile1 \
-    xdg-utils \
-    && rm -rf /var/lib/apt/lists/*
-
-# Installa libasound2 tramite libasound2t64
-RUN apt-get update && apt-get install -y libasound2t64
-
-# Installa gnupg
-RUN apt-get update && apt-get install -y gnupg
-
-# Scarica e installa Visual Studio Code
-RUN wget -q https://go.microsoft.com/fwlink/?LinkID=760868 -O vscode.deb && \
-    dpkg -i vscode.deb && \
-    apt-get install -f && \
-    rm vscode.deb
+RUN export JAVA_HOME=/usr/lib/jvm/java-11-openjdk && \
+    export PATH=$PATH:$JAVA_HOME/bin && \
+    java -version
 
 RUN mkdir workspace && \
-    cd workspace && \
-    git clone https://github.com/BrunoEsposito2/SPE_Project.git
+    cd workspace
 
 # Mappa la directory di lavoro nel container
 VOLUME [ "/workspace/SPE_Project" ]
+
+COPY . .
+
+RUN ./gradlew assemble
 
 # Imposta la directory di lavoro
 WORKDIR /workspace/SPE_Project
