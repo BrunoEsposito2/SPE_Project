@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     wget \
     unzip \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 # Installa le dipendenze necessarie per Visual Studio Code
@@ -29,13 +30,12 @@ RUN wget -q https://go.microsoft.com/fwlink/?LinkID=760868 -O vscode.deb && \
     apt-get install -f && \
     rm vscode.deb
 
-# Copia il progetto nella directory /workspace all'interno del container
-COPY ./ /workspace/OpenCV_Prova
+RUN mkdir workspace && \
+    cd workspace && \
+    git clone https://github.com/BrunoEsposito2/SPE_Project.git
 
-# Rimuove la directory build
-RUN rm -rf /workspace/OpenCV_Prova/build
-
-VOLUME [ "" ]
+# Mappa la directory di lavoro nel container
+VOLUME [ "/workspace/SPE_Project" ]
 
 # Imposta la directory di lavoro
-WORKDIR /workspace/OpenCV_Prova
+WORKDIR /workspace/SPE_Project

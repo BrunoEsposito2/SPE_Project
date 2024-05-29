@@ -1,0 +1,20 @@
+{
+    "name": "vscode_opencv_windows_container",
+    "context": "..",
+    "dockerFile": "Dockerfile",
+    "workspaceFolder": "/workspace/SPE_Project",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.cpptools",
+                "ms-vscode.cpptools-extension-pack",
+                "ms-vscode.cpptools-themes",
+                "twxs.cmake",
+                "ms-vscode.cmake-tools"
+            ],
+            "settings": {
+                "terminal.integrated.shell.linux": "/bin/bash"
+            }
+        }
+    }
+}
