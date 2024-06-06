@@ -1,0 +1,2 @@
+/usr/bin/ar qc //3rdparty/lib/libittnotify.a CMakeFiles/ittnotify.dir/src/ittnotify/ittnotify_static.c.o CMakeFiles/ittnotify.dir/src/ittnotify/jitprofiling.c.o
+/usr/bin/ranlib //3rdparty/lib/libittnotify.a
