@@ -17,3 +17,12 @@ plugins {
 application {
     targetMachines.add(machines.linux.x86_64)
 }
+
+tasks.register("prova") {
+    doLast {
+        exec {
+            workingDir(".")
+            commandLine("bash", "-c","ls")
+        }
+    }
+}
