@@ -20,4 +20,4 @@ jobs:
     steps:
       # Runs a single command using the runners shell
       - name: Print Hello World
-        run: gradlew -v
+        run: cd SPE_Project && gradlew -v
