@@ -7,7 +7,7 @@
 #include "app.h"
 
 std::string demo_cpp::Greeter::greeting() {
-    return std::string("Hello, World!");
+    return std::string("Hello, World!2");
 }
 
 int main () {
