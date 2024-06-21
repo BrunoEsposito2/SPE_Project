@@ -2,6 +2,14 @@ name: Build Gradle project
 
 on:
   push:
+    branches:
+        - "gradle-integration"
+
+  pull_request:
+    branches:
+      - "main" 
+    paths:
+      - ".github/workflows/build-gradle-project.yaml"
 
 jobs:
   build-gradle-project:
