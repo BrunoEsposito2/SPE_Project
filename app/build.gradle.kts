@@ -18,11 +18,15 @@ application {
     targetMachines.add(machines.linux.x86_64)
 }
 
-tasks.register("prova") {
+tasks.register("buildCMake") {
     doLast {
         exec {
-            workingDir(".")
-            commandLine("bash", "-c","ls")
+            commandLine("sh", "-c", """
+                mkdir -p build &&
+                cd build &&
+                cmake .. &&
+                cmake --build .
+            """)
         }
     }
 }
