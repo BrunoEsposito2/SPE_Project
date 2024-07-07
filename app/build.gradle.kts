@@ -37,7 +37,7 @@ application {
 // Configurazione Spotless per C++
 spotless {
     cpp {
-        target("src/**/*.cpp", "src/**/*.h")
+        target("app/src/main/cpp/*.cpp", "app/src/main/headers/*.h")
         clangFormat()
     }
 }
@@ -70,4 +70,4 @@ tasks.register("buildCMake") {
 }
 
 // Assicurati che i git hooks vengano installati durante il build
-//tasks.getByPath(":prepareKotlinBuildScriptModel").dependsOn.add(tasks.getByName("installGitHooks"))
+tasks.getByPath(":prepareKotlinBuildScriptModel").dependsOn.add(tasks.getByName("check"))
