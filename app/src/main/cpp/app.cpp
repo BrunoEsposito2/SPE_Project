@@ -26,6 +26,8 @@ public:
  string modeName() const { return (m == Default ? "Default" : "Daimler"); }
  vector<Rect> detect(InputArray img)
  {
+
+
  // Run the detector with default parameters. to get a higher hit-rate
  // (and more false alarms, respectively), decrease the hitThreshold and
  // groupThreshold (set groupThreshold to 0 to turn off the grouping completely).
