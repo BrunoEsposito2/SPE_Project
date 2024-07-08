@@ -25,7 +25,7 @@ public:
  void toggleMode() { m = (m == Default ? Daimler : Default); }
  string modeName() const { return (m == Default ? "Default" : "Daimler"); }
  vector<Rect> detect(InputArray img)
- {
+  {
 
 
  // Run the detector with default parameters. to get a higher hit-rate
