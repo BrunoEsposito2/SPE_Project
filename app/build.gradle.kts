@@ -71,7 +71,7 @@ tasks.register("buildCMake") {
 tasks.register("installPreCommit") {
     doLast {
         val os = org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem()
-        if (os.isWindows()) {
+        if (os.isWindows) {
             exec {
                 commandLine(
                     "cmd", "/c", """
