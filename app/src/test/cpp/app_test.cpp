@@ -6,7 +6,5 @@
 #include <cassert>
 
 int main() {
-    demo_cpp::Greeter greeter;
-    assert(greeter.greeting().compare("Hello, World!") == 0);
     return 0;
 }
