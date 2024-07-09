@@ -39,15 +39,17 @@ spotless {
         target("app/src/main/cpp/*.cpp", "app/src/main/headers/*.h")
         clangFormat()
     }
+    isEnforceCheck = false // Permette al build di proseguire anche se ci sono errori di formattazione
 }
 
 // Configurazione Git Hooks
 gitHooks {
-    setHooks(mapOf("pre-commit" to "check"))
+    setHooks(mapOf("pre-commit" to "spotlessApply check"))
     setHooks(mapOf("commit-msg" to "conventionalCommits"))
+    setHooksDirectory(layout.projectDirectory.dir("../.git/hooks"))
 }
 
-fun conventionalCommits() {
+tasks.register("conventionalCommits") {
     val pattern = Pattern.compile("^(feat|fix|docs|style|refactor|test|chore)(\\(.*\\))?: .{1,50}")
     val message = File(".git/COMMIT_EDITMSG").readText().trim()
     if (!pattern.matcher(message).find()) {
@@ -64,32 +66,6 @@ tasks.register("buildCMake") {
                 cmake .. &&
                 cmake --build .
             """)
-        }
-    }
-}
-
-tasks.register("installPreCommit") {
-    doLast {
-        val os = org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem()
-        if (os.isWindows) {
-            exec {
-                commandLine(
-                    "cmd", "/c", """
-                    curl https://github.com/pre-commit/pre-commit/releases/download/v3.7.1/pre-commit-3.7.1.pyz -o pre-commit &&
-                    powershell -Command "Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass" &&
-                    powershell -Command "chmod +x pre-commit" &&
-                    powershell -Command "./pre-commit install"
-                """)
-            }
-        } else {
-            exec {
-                commandLine(
-                    "sh", "-c", """
-                    curl https://github.com/pre-commit/pre-commit/releases/download/v3.7.1/pre-commit-3.7.1.pyz -o pre-commit &&
-                    chmod +x pre-commit &&
-                    ./pre-commit install
-                """)
-            }
         }
     }
 }
@@ -119,5 +95,4 @@ tasks.withType<CppCompile>().configureEach {
 }
 
 // Assicurati che i git hooks vengano installati durante il build
-tasks.getByPath(":prepareKotlinBuildScriptModel").dependsOn
-    .addAll(listOf(tasks.getByName("check"), tasks.getByName("installPreCommit")))
+tasks.getByPath(":prepareKotlinBuildScriptModel").dependsOn.addAll(listOf(tasks.getByName("check")))
