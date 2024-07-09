@@ -13,7 +13,7 @@ using namespace cv;
 using namespace std;
 
 class Detector
-{
+ {
  enum Mode { Default, Daimler } m;
  HOGDescriptor hog, hog_d;
 public:

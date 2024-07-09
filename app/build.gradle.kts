@@ -1,4 +1,3 @@
-import java.awt.SystemColor.text
 import java.util.regex.Pattern
 
 /*
@@ -26,7 +25,7 @@ repositories {
 
 dependencies {
     // Aggiungi qui le tue dipendenze
-    implementation("com.diffplug.spotless:spotless-plugin-gradle:6.25.0")
+    //implementation("com.diffplug.spotless:spotless-plugin-gradle:6.25.0")
 }
 
 // Set the target operating system and architecture for this application
@@ -69,5 +68,56 @@ tasks.register("buildCMake") {
     }
 }
 
+tasks.register("installPreCommit") {
+    doLast {
+        val os = org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem()
+        if (os.isWindows()) {
+            exec {
+                commandLine(
+                    "cmd", "/c", """
+                    curl https://github.com/pre-commit/pre-commit/releases/download/v3.7.1/pre-commit-3.7.1.pyz -o pre-commit &&
+                    powershell -Command "Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass" &&
+                    powershell -Command "chmod +x pre-commit" &&
+                    powershell -Command "./pre-commit install"
+                """)
+            }
+        } else {
+            exec {
+                commandLine(
+                    "sh", "-c", """
+                    curl https://github.com/pre-commit/pre-commit/releases/download/v3.7.1/pre-commit-3.7.1.pyz -o pre-commit &&
+                    chmod +x pre-commit &&
+                    ./pre-commit install
+                """)
+            }
+        }
+    }
+}
+
+unitTest {
+    targetMachines.add(machines.linux.x86_64)
+}
+
+// Configura cpp-application per usare l'output di CMake
+tasks.withType<LinkExecutable>().configureEach {
+    dependsOn("buildCMake")
+    linkerArgs.addAll(listOf(
+        "-L/usr/local/lib",
+        "-lopencv_core",
+        "-lopencv_imgproc",
+        "-lopencv_objdetect",
+        "-lopencv_highgui",
+        "-lopencv_imgcodecs",
+        "-lopencv_videoio"
+    ))
+    linkerArgs.add("-Wl,-rpath,/usr/local/lib")
+}
+
+tasks.withType<CppCompile>().configureEach {
+    dependsOn("buildCMake")
+    includes.from("/usr/local/include/opencv4")
+}
+
 // Assicurati che i git hooks vengano installati durante il build
-tasks.getByPath(":prepareKotlinBuildScriptModel").dependsOn.add(tasks.getByName("check"))
+tasks.getByPath(":prepareKotlinBuildScriptModel").dependsOn
+    .addAll(listOf(tasks.getByName("check"), tasks.getByName("installPreCommit")))
