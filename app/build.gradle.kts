@@ -1,7 +1,7 @@
 import java.util.regex.Pattern
 import groovy.json.JsonSlurper
 import okio.ByteString.Companion.encode
-import org.gradle.internal.impldep.org.apache.commons.io.output.ByteArrayOutputStream
+import java.io.ByteArrayOutputStream
 import java.nio.charset.Charset
 import java.net.URI
 
@@ -14,7 +14,7 @@ import java.net.URI
 
 plugins {
     id("com.github.jakemarsden.git-hooks") version "0.0.2"
-    id("com.diffplug.spotless") version "6.25.0"
+    id("com.diffplug.spotless") version "7.0.0.BETA1"
 
     // Apply the cpp-application plugin to add support for building C++ executables
     `cpp-application`
@@ -33,18 +33,80 @@ application {
     targetMachines.add(machines.linux.x86_64)
 }
 
+val chocolateyPath = "C:\\ProgramData\\chocolatey\\bin\\choco.exe"
+val llvmPath = "C:\\ProgramData\\chocolatey\\lib\\llvm"
+
+/* Install choco package manager for windows */
+tasks.register("installChocolatey") {
+    group = "setup"
+    description = "Chocolatey Install"
+
+    if (!File(chocolateyPath).exists()) {
+        val scriptPath = file("..\\install-chocolatey.ps1").absolutePath
+
+        println("Installing Chocolatey...")
+        val returnValue = exec {
+            commandLine("powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", scriptPath)
+            standardOutput = System.out
+            errorOutput = System.err
+        }.exitValue
+
+        if (returnValue == 0)
+            println("Chocolatey installed. Please, restart the prompt before using it.")
+        else
+            println("Problem occurs when trying to install Chocolatey.")
+    } else {
+        println("Chocolatey is already installed.")
+    }
+
+
+}
+
+/* Install clang format via choco */
+tasks.register("installDependencies") {
+    dependsOn("installChocolatey")
+    doFirst {
+        println("Installing clang-format using Chocolatey...")
+    }
+
+    doLast {
+        if (!File(llvmPath).exists()) {
+            val installScriptFile = file("..\\install-llvm.ps1")
+            installScriptFile.writeText("Start-Process powershell -Verb runAs -ArgumentList \"choco install llvm\"")
+
+            val returnValue = exec {
+                commandLine("powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", installScriptFile)
+                standardOutput = System.out
+                errorOutput = System.err
+            }.exitValue
+
+            if (returnValue == 0)
+                println("LLVM installed.")
+            else
+                println("Problem occurs when trying to install LLVM.")
+        } else {
+            println("LLVM is already installed.")
+        }
+    }
+}
+
+tasks.getByName("spotlessCheck").dependsOn("installDependencies")
+
 // Configurazione Spotless per C++
 spotless {
     cpp {
-        target("app/src/main/cpp/*.cpp", "app/src/main/headers/*.h")
-        clangFormat()
+        target("src/main/cpp/*.cpp", "src/main/headers/*.h")
+        clangFormat("18.1.8").pathToExe("C:\\Program Files\\LLVM\\bin\\clang-format.exe")
+        // Altre regole personalizzate
+        trimTrailingWhitespace()
+        endWithNewline()
     }
     isEnforceCheck = false // Permette al build di proseguire anche se ci sono errori di formattazione
 }
 
 // Configurazione Git Hooks
 gitHooks {
-    setHooks(mapOf("pre-commit" to "spotlessApply check"))
+    setHooks(mapOf("pre-commit" to "spotlessCheck check"))
     setHooks(mapOf("commit-msg" to "conventionalCommits"))
     setHooksDirectory(layout.projectDirectory.dir("../.git/hooks"))
 }
@@ -57,7 +119,7 @@ tasks.register("conventionalCommits") {
     }
 }
 
-tasks.register("checkBranchFiles") {
+/*tasks.register("checkBranchFiles") {
     doLast {
         val currentBranch = exec {
             commandLine("git rev-parse --abbrev-ref HEAD")
@@ -115,7 +177,7 @@ fun createIssue(branch: String, files: List<String>) {
 
     val response = JsonSlurper().parse(connection.inputStream)
     println("Issue creata: ${response}")
-}
+}*/
 
 tasks.register("buildCMake") {
     doLast {
@@ -124,7 +186,8 @@ tasks.register("buildCMake") {
                 mkdir -p build &&
                 cd build &&
                 cmake .. &&
-                cmake --build .
+                cmake --build . &&
+                cmake --install .
             """)
         }
     }
