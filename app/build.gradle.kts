@@ -106,13 +106,13 @@ spotless {
 
 // Configurazione Git Hooks
 gitHooks {
-    setHooks(mapOf("pre-commit" to "spotlessCheck check"))
+    setHooks(mapOf("pre-commit" to "spotlessCheck"))
     setHooks(mapOf("commit-msg" to "conventionalCommits"))
     setHooksDirectory(layout.projectDirectory.dir("../.git/hooks"))
 }
 
 tasks.register("conventionalCommits") {
-    val pattern = Pattern.compile("^(feat|fix|docs|style|refactor|test|chore)(\\(.*\\))?: .{1,50}")
+    val pattern = Pattern.compile("^(feat|fix|docs|style|refactor|test|chore|build|ci)(\\(.*\\))?: .{1,50}")
     val message = File(".git/COMMIT_EDITMSG").readText().trim()
     if (!pattern.matcher(message).find()) {
         throw GradleException("Commit message does not follow Conventional Commits format.")
