@@ -7,12 +7,11 @@
 
 #include <string>
 
-
 namespace demo_cpp {
-    class Greeter {
-        public:
-        std::string greeting();
-    };
-}
+class Greeter {
+public:
+  std::string greeting();
+};
+} // namespace demo_cpp
 
 #endif

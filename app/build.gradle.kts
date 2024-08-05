@@ -91,6 +91,7 @@ tasks.register("installDependencies") {
 }
 
 tasks.getByName("spotlessCheck").dependsOn("installDependencies")
+tasks.getByName("spotlessApply").dependsOn("spotlessCheck")
 
 // Configurazione Spotless per C++
 spotless {
@@ -106,7 +107,7 @@ spotless {
 
 // Configurazione Git Hooks
 gitHooks {
-    setHooks(mapOf("pre-commit" to "spotlessCheck"))
+    setHooks(mapOf("commit-msg" to "spotlessApply"))
     setHooks(mapOf("commit-msg" to "conventionalCommits"))
     setHooksDirectory(layout.projectDirectory.dir("../.git/hooks"))
 }
