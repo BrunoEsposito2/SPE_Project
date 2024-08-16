@@ -90,10 +90,6 @@ tasks.register("installDependencies") {
     }
 }
 
-tasks.register("startSpotless") {
-    dependsOn("installDependencies", "spotlessCheck", "spotlessApply")
-}
-
 // Configurazione Spotless per C++
 spotless {
     cpp {
@@ -106,12 +102,45 @@ spotless {
     isEnforceCheck = false // Permette al build di proseguire anche se ci sono errori di formattazione
 }
 
-
 // Configurazione Git Hooks
 gitHooks {
-    setHooks(mapOf("commit-msg" to "startSpotless"))
+    setHooks(mapOf("commit-msg" to "checkAndApplySpotlessForCpp"))
     setHooks(mapOf("commit-msg" to "conventionalCommits"))
     setHooksDirectory(layout.projectDirectory.dir("../.git/hooks"))
+}
+
+tasks.register("checkAndApplySpotlessForCpp") {
+    doLast {
+        // Cattura l'output del comando git diff
+        val outputStream = ByteArrayOutputStream()
+        exec {
+            commandLine("git", "diff", "--cached", "--name-only", "--diff-filter=ACM")
+            standardOutput = outputStream // Direziona l'output nel ByteArrayOutputStream
+        }
+
+        // Ottieni l'elenco dei file .cpp modificati
+        val cppFiles = outputStream.toString().trim().lines().filter { it.endsWith(".cpp") }
+
+        if (cppFiles.isNotEmpty()) {
+            // Esegui spotlessCheck
+            val checkResult = exec {
+                commandLine("gradlew", "spotlessCheck")
+                isIgnoreExitValue = true // Non fallire il build se spotlessCheck fallisce
+            }
+
+            // Se spotlessCheck fallisce, esegui spotlessApply
+            if (checkResult.exitValue != 0) {
+                exec {
+                    commandLine("gradlew", "spotlessApply")
+                }
+
+                // Aggiungi nuovamente i file formattati al commit
+                exec {
+                    commandLine("git", "add", *cppFiles.toTypedArray())
+                }
+            }
+        }
+    }
 }
 
 tasks.register("conventionalCommits") {
