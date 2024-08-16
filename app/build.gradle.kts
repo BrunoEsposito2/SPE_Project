@@ -109,6 +109,7 @@ gitHooks {
     setHooksDirectory(layout.projectDirectory.dir("../.git/hooks"))
 }
 
+
 tasks.register("checkAndApplySpotlessForCpp") {
     doLast {
         // Cattura l'output del comando git diff
