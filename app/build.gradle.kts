@@ -110,13 +110,7 @@ gitHooks {
 
 tasks.register("startSpotless") {
     dependsOn("installDependencies")
-    onlyIf {
-        dependsOn("spotlessCheck").state.failure != null
-    }
-    doLast {
-        println("Invalid cpp style adopted. Starting spotlessApply task...")
-        dependsOn("spotlessApply")
-    }
+    dependsOn("spotlessCheck")
 }
 
 tasks.register("conventionalCommits") {
