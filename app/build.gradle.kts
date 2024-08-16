@@ -109,7 +109,6 @@ gitHooks {
     setHooksDirectory(layout.projectDirectory.dir("../.git/hooks"))
 }
 
-
 tasks.register("startSpotless") {
     dependsOn("installDependencies", "spotlessApply")
 }
