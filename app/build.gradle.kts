@@ -90,11 +90,6 @@ tasks.register("installDependencies") {
     }
 }
 
-tasks.register("startSpotless") {
-    dependsOn("installDependencies")
-    dependsOn("spotlessApply")
-}
-
 // Configurazione Spotless per C++
 spotless {
     cpp {
@@ -112,6 +107,10 @@ gitHooks {
     setHooks(mapOf("commit-msg" to "startSpotless"))
     setHooks(mapOf("commit-msg" to "conventionalCommits"))
     setHooksDirectory(layout.projectDirectory.dir("../.git/hooks"))
+}
+
+tasks.register("startSpotless") {
+    dependsOn("installDependencies", "spotlessApply")
 }
 
 tasks.register("conventionalCommits") {
