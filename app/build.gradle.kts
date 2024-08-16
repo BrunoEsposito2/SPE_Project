@@ -91,7 +91,8 @@ tasks.register("installDependencies") {
 }
 
 tasks.register("startSpotless") {
-    dependsOn("installDependencies", "spotlessCheck", "spotlessApply")
+    dependsOn("installDependencies")
+    dependsOn("spotlessApply")
 }
 
 // Configurazione Spotless per C++
