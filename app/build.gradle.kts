@@ -104,12 +104,26 @@ spotless {
 
 // Configurazione Git Hooks
 gitHooks {
-    setHooks(mapOf("commit-msg" to "startSpotless && conventionalCommits"))
+    setHooks(mapOf("commit-msg" to "startSpotless conventionalCommits"))
     setHooksDirectory(layout.projectDirectory.dir("../.git/hooks"))
 }
 
 tasks.register("startSpotless") {
-    dependsOn("installDependencies", "spotlessApply")
+    dependsOn("installDependencies")
+
+    doLast {
+        val execSpotlessCheck = exec {
+            commandLine(".././gradlew", "spotlessCheck")
+        }.exitValue
+
+        if (execSpotlessCheck != 0) {
+            println("Invalid cpp style adopted. Starting spotlessApply task...")
+            exec {
+                commandLine(".././gradlew", "spotlessApply")
+            }
+        } else
+            println("All cpp style rules are followed.")
+    }
 }
 
 tasks.register("conventionalCommits") {
