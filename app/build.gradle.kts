@@ -111,6 +111,7 @@ gitHooks {
 
 
 tasks.register("checkAndApplySpotlessForCpp") {
+    dependsOn("installDependencies")
     doLast {
         // Cattura l'output del comando git diff
         val outputStream = ByteArrayOutputStream()
@@ -125,14 +126,14 @@ tasks.register("checkAndApplySpotlessForCpp") {
         if (cppFiles.isNotEmpty()) {
             // Esegui spotlessCheck
             val checkResult = exec {
-                commandLine("gradlew", "spotlessCheck")
+                commandLine("cmd /c", "gradlew", "spotlessCheck")
                 isIgnoreExitValue = true // Non fallire il build se spotlessCheck fallisce
             }
 
             // Se spotlessCheck fallisce, esegui spotlessApply
             if (checkResult.exitValue != 0) {
                 exec {
-                    commandLine("gradlew", "spotlessApply")
+                    commandLine("cmd /c", "gradlew", "spotlessApply")
                 }
 
                 // Aggiungi nuovamente i file formattati al commit

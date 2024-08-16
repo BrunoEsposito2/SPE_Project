@@ -3,7 +3,6 @@
 // of this distribution and at http://opencv.org/license.html
 
 
-
 #include <opencv2/objdetect.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
