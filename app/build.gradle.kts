@@ -90,6 +90,10 @@ tasks.register("installDependencies") {
     }
 }
 
+tasks.register("startSpotless") {
+    dependsOn("installDependencies", "spotlessCheck", "spotlessApply")
+}
+
 // Configurazione Spotless per C++
 spotless {
     cpp {
@@ -104,48 +108,10 @@ spotless {
 
 // Configurazione Git Hooks
 gitHooks {
-    setHooks(mapOf("commit-msg" to "checkAndApplySpotlessForCpp"))
+    setHooks(mapOf("pre-commit" to "startSpotless"))
     setHooks(mapOf("commit-msg" to "conventionalCommits"))
     setHooksDirectory(layout.projectDirectory.dir("../.git/hooks"))
 }
-
-
-tasks.register("checkAndApplySpotlessForCpp") {
-    dependsOn("installDependencies")
-    doLast {
-        // Cattura l'output del comando git diff
-        val outputStream = ByteArrayOutputStream()
-        exec {
-            commandLine("git", "diff", "--cached", "--name-only", "--diff-filter=ACM")
-            standardOutput = outputStream // Direziona l'output nel ByteArrayOutputStream
-        }
-
-        println("lines: " + outputStream.toString().trim().lines())
-        // Ottieni l'elenco dei file .cpp modificati
-        val cppFiles = outputStream.toString().trim().lines().filter { it.endsWith(".cpp") }
-
-        if (cppFiles.isNotEmpty()) {
-            // Esegui spotlessCheck
-            val checkResult = exec {
-                commandLine("cmd /c", "gradlew", "spotlessCheck")
-                isIgnoreExitValue = true // Non fallire il build se spotlessCheck fallisce
-            }
-
-            // Se spotlessCheck fallisce, esegui spotlessApply
-            if (checkResult.exitValue != 0) {
-                exec {
-                    commandLine("cmd /c", "gradlew", "spotlessApply")
-                }
-
-                // Aggiungi nuovamente i file formattati al commit
-                exec {
-                    commandLine("git", "add", *cppFiles.toTypedArray())
-                }
-            }
-        }
-    }
-}
-
 
 tasks.register("conventionalCommits") {
     val pattern = Pattern.compile("^(feat|fix|docs|style|refactor|test|chore|build|ci)(\\(.*\\))?: .{1,50}")
