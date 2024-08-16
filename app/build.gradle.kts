@@ -113,8 +113,10 @@ tasks.register("startSpotless") {
     onlyIf {
         dependsOn("spotlessCheck").state.failure != null
     }
-    println("Invalid cpp style adopted. Starting spotlessApply task...")
-    finalizedBy("spotlessApply")
+    doLast {
+        println("Invalid cpp style adopted. Starting spotlessApply task...")
+        dependsOn("spotlessApply")
+    }
 }
 
 tasks.register("conventionalCommits") {
