@@ -105,7 +105,7 @@ spotless {
 // Configurazione Git Hooks
 gitHooks {
     setHooks(mapOf("commit-msg" to "startSpotless"))
-    setHooks(mapOf("commit-msg" to "conventionalCommits"))
+    //setHooks(mapOf("commit-msg" to "conventionalCommits"))
     setHooksDirectory(layout.projectDirectory.dir("../.git/hooks"))
 }
 
