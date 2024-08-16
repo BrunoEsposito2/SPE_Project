@@ -143,6 +143,7 @@ tasks.register("checkAndApplySpotlessForCpp") {
     }
 }
 
+
 tasks.register("conventionalCommits") {
     val pattern = Pattern.compile("^(feat|fix|docs|style|refactor|test|chore|build|ci)(\\(.*\\))?: .{1,50}")
     val message = File(".git/COMMIT_EDITMSG").readText().trim()
