@@ -120,6 +120,7 @@ tasks.register("checkAndApplySpotlessForCpp") {
             standardOutput = outputStream // Direziona l'output nel ByteArrayOutputStream
         }
 
+        println("lines: " + outputStream.toString().trim().lines())
         // Ottieni l'elenco dei file .cpp modificati
         val cppFiles = outputStream.toString().trim().lines().filter { it.endsWith(".cpp") }
 
