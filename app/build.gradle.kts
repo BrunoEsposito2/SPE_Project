@@ -110,20 +110,11 @@ gitHooks {
 
 tasks.register("startSpotless") {
     dependsOn("installDependencies")
-
-    doLast {
-        val execSpotlessCheck = exec {
-            commandLine(".././gradlew", "spotlessCheck")
-        }.exitValue
-
-        if (execSpotlessCheck != 0) {
-            println("Invalid cpp style adopted. Starting spotlessApply task...")
-            exec {
-                commandLine(".././gradlew", "spotlessApply")
-            }
-        } else
-            println("All cpp style rules are followed.")
+    onlyIf {
+        dependsOn("spotlessCheck").state.failure != null
     }
+    println("Invalid cpp style adopted. Starting spotlessApply task...")
+    finalizedBy("spotlessApply")
 }
 
 tasks.register("conventionalCommits") {
