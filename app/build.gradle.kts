@@ -102,6 +102,7 @@ spotless {
     isEnforceCheck = false // Permette al build di proseguire anche se ci sono errori di formattazione
 }
 
+
 // Configurazione Git Hooks
 gitHooks {
     setHooks(mapOf("commit-msg" to "startSpotless conventionalCommits"))
