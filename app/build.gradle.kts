@@ -102,7 +102,6 @@ spotless {
     isEnforceCheck = false // Permette al build di proseguire anche se ci sono errori di formattazione
 }
 
-
 // Configurazione Git Hooks
 gitHooks {
     setHooks(mapOf("commit-msg" to "startSpotless conventionalCommits"))
@@ -122,31 +121,39 @@ tasks.register("conventionalCommits") {
     }
 }
 
-/*tasks.register("checkBranchFiles") {
+tasks.register("checkBranchFiles") {
     doLast {
-        val currentBranch = exec {
-            commandLine("git rev-parse --abbrev-ref HEAD")
-            standardOutput = ByteArrayOutputStream()
-        }.toString()
+        val currentBranch = ByteArrayOutputStream().use { outputStream ->
+            exec {
+                commandLine("git", "rev-parse", "--abbrev-ref", "HEAD")
+                standardOutput = outputStream
+            }
+            outputStream.toString().trim()
+        }
 
-        val stagedFiles = exec {
-            commandLine("git diff --cached --name-only")
-            standardOutput = ByteArrayOutputStream()
-        }.toString().trim().split("\n")
+        val stagedFiles = ByteArrayOutputStream().use { outputStream ->
+            exec {
+                commandLine("git", "diff", "--cached", "--name-only")
+                standardOutput = outputStream
+            }
+            outputStream.toString().trim().split("\n").filter { it.isNotEmpty() }
+        }
 
-        val nonBranchFiles = stagedFiles.stream().filter { s -> !s.startsWith("src/main/${currentBranch}/") }
+        val nonBranchFiles = stagedFiles.filter { file -> !file.startsWith("app/src/main/$currentBranch/") }
 
-        if (nonBranchFiles.toList().size > 0) {
+        if (nonBranchFiles.toList().isNotEmpty()) {
             println("ATTENZIONE: I seguenti file non appartengono al branch corrente (${currentBranch}):")
             nonBranchFiles.forEach { el -> println(el) }
 
-            val userInput: String = System.console().readLine("Vuoi creare una issue per questi file? (y/n): ")
+            println("Vuoi creare una issue per questi file? (y/n): ")
+            val userInput: String = readln()
             if (userInput.lowercase() == "y") {
                 createIssue(currentBranch, nonBranchFiles.toList())
             } else {
-                val proceed = System.console().readLine("Vuoi procedere comunque con il commit? (y/n): ")
+                println("Vuoi procedere comunque con il commit? (y/n): ")
+                val proceed = readln()
                 if (proceed.lowercase() != "y") {
-                    throw GradleException("Commit abortito dall'utente.")
+                    println("Commit abortito dall'utente.")
                 }
             }
         }
@@ -180,7 +187,7 @@ fun createIssue(branch: String, files: List<String>) {
 
     val response = JsonSlurper().parse(connection.inputStream)
     println("Issue creata: ${response}")
-}*/
+}
 
 tasks.register("buildCMake") {
     doLast {
