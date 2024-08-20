@@ -150,12 +150,41 @@ tasks.register("checkBranchFiles") {
             if (userInput.lowercase() == "y") {
                 createIssue(currentBranch, nonBranchFiles.toList())
             } else {
-                println("Vuoi procedere comunque con il commit? (y/n): ")
-                val proceed = readln()
-                if (proceed.lowercase() != "y") {
-                    println("Commit abortito dall'utente.")
+                val files = if (nonBranchFiles.size > 1) nonBranchFiles.map { f -> f + "\n"}.toString() else nonBranchFiles.toList()[0]
+                println("Per continuare con il commit bisogna effettuare prima il rollback dei seguenti file: \n" +
+                        files)
+                println("Vuoi procedere? (y/n):")
+                exec {
+                    commandLine("git", "status")
+                }
+                val response = readln()
+                if (response.lowercase() == "y") {
+                    nonBranchFiles
+                        .map { file -> file.replace("\n", "")}
+                        .map { file -> file.replace("app/", "") }
+                        .map { file -> file.trim() }
+                        .forEach { file ->
+                            try {
+                                // Rimuove il file dall'area di staging
+                                exec {
+                                    commandLine("git", "restore", "--staged", file)
+                                }
+                                // Ripristina il file dallo stato dell'ultimo commit
+                                exec {
+                                    commandLine("git", "restore", file)
+                                }
+                            } catch (e: Exception) {
+                                println("Errore durante il rollback del file $file: ${e.message}")
+                            }
+                        }
+                } else {
+                    throw GradleException("Commit aborted because some files refers to the other branch(es). \n" +
+                            "Please rollback the following files before continuing with the commit: \n" +
+                            files)
                 }
             }
+        } else {
+            println("Nessun file non appartenente al branch corrente trovato.")
         }
     }
 }
