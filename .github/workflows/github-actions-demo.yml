@@ -20,7 +20,7 @@ jobs:
     - name: Powershell Example
       shell: pwsh
       run: | 
-        $systemPath = "/home/runner/work/" 
+        $systemPath = "/home/runner/work/SPE_Project" 
         
         Write-Host "Primi 20 file nella directory $systemPath:"
         Write-Host "----------------------------------------"
