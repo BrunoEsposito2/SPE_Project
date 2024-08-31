@@ -17,6 +17,32 @@ jobs:
     - name: Checkout project sources
       uses: actions/checkout@v4
 
+    - name: Powershell Example
+      shell: pwsh
+      run: | 
+        $systemPath = "/etc" 
+        
+        Write-Host "Primi 20 file nella directory $systemPath:"
+        Write-Host "----------------------------------------"
+        
+        Get-ChildItem -Path $systemPath | Select-Object -First 20 | ForEach-Object {
+          Write-Host $_.Name
+        }
+
+        $totalFiles = (Get-ChildItem -Path $systemPath).Count
+        Write-Host "`nNumero totale di file nella directory: $totalFiles"
+        
+        Write-Host "`nInformazioni sul sistema:"
+        Write-Host "------------------------"
+        Write-Host "Nome del sistema operativo: $((uname -s) -join '')"
+        Write-Host "Versione del kernel: $((uname -r) -join '')"
+        Write-Host "Architettura: $((uname -m) -join '')"
+        
+        Write-Host "`nInformazioni su PowerShell:"
+        Write-Host "------------------------"
+        Write-Host "Versione di PowerShell: $($PSVersionTable.PSVersion)"
+        Write-Host "Edizione di PowerShell: $($PSVersionTable.PSEdition)"
+
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
       with:
