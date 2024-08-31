@@ -25,11 +25,11 @@ jobs:
         Write-Host "Primi 20 file nella directory $systemPath:"
         Write-Host "----------------------------------------"
         
-        Get-ChildItem -Path $systemPath | Select-Object -First 20 | ForEach-Object {
+        Get-ChildItem -Path ${systemPath} | Select-Object -First 20 | ForEach-Object {
           Write-Host $_.Name
         }
 
-        $totalFiles = (Get-ChildItem -Path $systemPath).Count
+        $totalFiles = (Get-ChildItem -Path ${systemPath}).Count
         Write-Host "`nNumero totale di file nella directory: $totalFiles"
         
         Write-Host "`nInformazioni sul sistema:"
