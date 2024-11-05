@@ -11,6 +11,8 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     nano \
+    # package to import opencv face detector
+    opencv-data \
     && rm -rf /var/lib/apt/lists/*
 
 # Installa gnupg
@@ -26,4 +28,4 @@ COPY . .
 # RUN apt-get install libboost-all-dev libwebsocketpp-dev
 
 # Mappa la directory di lavoro nel container
-VOLUME [ "/workspace/SPE_Project" ]
+VOLUME [ "/workspace/" ]
