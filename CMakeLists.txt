@@ -5,6 +5,19 @@ project(OpenCV_Prova)
 set(OpenCV_DIR C:/Users/bruno/Desktop/opencv/build)
 find_package(OpenCV REQUIRED)
 
+find_package(websocketpp REQUIRED)
+
+# Boost
+find_package(Boost REQUIRED)
+
+# Executable
 add_executable(${PROJECT_NAME} src/Main.cpp)
 
-target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
+# Linking
+target_link_libraries(${PROJECT_NAME}
+    PRIVATE
+        ${OpenCV_LIBS}
+        websocketpp::websocketpp
+        Boost::boost
+)
+
